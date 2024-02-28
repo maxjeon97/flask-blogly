@@ -8,6 +8,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, db
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "oh-so-secret"
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     "DATABASE_URL", 'postgresql:///blogly')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -46,7 +48,7 @@ def show_user(user_id):
     return render_template('user.html', user=user)
 
 @app.get('/users/<int:user_id>/edit')
-def show_edit_form(user_id):
+def show_edit_user_form(user_id):
     user = User.query.get(user_id)
     return render_template('edit_user_form.html', user=user)
 

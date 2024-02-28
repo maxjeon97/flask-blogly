@@ -35,5 +35,5 @@ class User(db.Model):
     image_url = db.Column(
         db.String(50),
         nullable=False, # could add a default image URL
-        default="image.jpg"
+        default="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
     )
