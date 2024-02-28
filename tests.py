@@ -1,11 +1,10 @@
+from models import DEFAULT_IMAGE_URL, User
+from app import app, db
+from unittest import TestCase
 import os
 
 os.environ["DATABASE_URL"] = "postgresql:///blogly_test"
 
-from unittest import TestCase
-
-from app import app, db
-from models import DEFAULT_IMAGE_URL, User
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -55,9 +54,27 @@ class UserViewTestCase(TestCase):
         db.session.rollback()
 
     def test_list_users(self):
-        with app.test_client() as c:
-            resp = c.get("/users")
+        with app.test_client() as client:
+            resp = client.get('/users')
             self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("test1_first", html)
+            self.assertIn("test1_last", html)
+
+    def test_add_user_form(self):
+        with app.test_client() as client:
+            resp = client.get('/users/new')
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn('<!-- comment for testing new user form -->', html)
+
+    def test_show_user_info(self):
+        with app.test_client() as client:
+            resp = client.get(f'/users/{self.user_id}')
+            self.assertEqual(resp.status_code, 200)
+
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
