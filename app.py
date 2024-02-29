@@ -193,7 +193,7 @@ def show_new_tag_form():
 @app.post('/tags/new')
 def handle_add_tag():
     """Adds new tag to database."""
-    name = request.form['name']
+    name = request.form['tag_name']
 
     tag = Tag(name=name)
     db.session.add(tag)
