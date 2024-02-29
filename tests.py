@@ -10,7 +10,7 @@ os.environ["DATABASE_URL"] = "postgresql:///blogly_test"
 app.config['TESTING'] = True
 
 # This is a bit of hack, but don't use Flask DebugToolbar
-app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
+# app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 # Create our tables (we do this here, so we only create the tables
 # once for all tests --- in each test, we'll delete the data
@@ -36,7 +36,7 @@ class UserViewTestCase(TestCase):
         test_user = User(
             first_name="test1_first",
             last_name="test1_last",
-            image_url=None,
+            img_url=None,
         )
 
         db.session.add(test_user)
@@ -54,6 +54,7 @@ class UserViewTestCase(TestCase):
         db.session.rollback()
 
     def test_list_users(self):
+        """Test status code and html for user list."""
         with app.test_client() as client:
             resp = client.get('/users')
             self.assertEqual(resp.status_code, 200)
@@ -63,14 +64,16 @@ class UserViewTestCase(TestCase):
             self.assertIn("test1_last", html)
 
     def test_add_user_form(self):
+        """Test new user form is rendered."""
         with app.test_client() as client:
             resp = client.get('/users/new')
             self.assertEqual(resp.status_code, 200)
 
             html = resp.get_data(as_text=True)
-            self.assertIn('<!-- comment for testing new user form -->', html)
+            self.assertIn('<form action="/users/new"', html)
 
     def test_show_user_info(self):
+        """Tests correct user info rendered."""
         with app.test_client() as client:
             resp = client.get(f'/users/{self.user_id}')
             self.assertEqual(resp.status_code, 200)
@@ -78,3 +81,22 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+
+    def test_delete_user_redirect(self):
+        """Tests redirect."""
+        with app.test_client() as client:
+            resp = client.post(f'/users/{self.user_id}/delete')
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, '/users')
+
+    def test_delete_user_redirect_followed(self):
+        """Tests delete user redirect followed and user deleted."""
+        with app.test_client() as client:
+            resp = client.post(
+                f'/users/{self.user_id}/delete', follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertNotIn("test1_first", html)
+            self.assertNotIn("test1_last", html)
+            self.assertIn("Add user", html)

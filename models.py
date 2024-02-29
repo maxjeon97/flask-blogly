@@ -1,5 +1,6 @@
 """Models for Blogly."""
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -36,7 +37,44 @@ class User(db.Model):
     )
 
     img_url = db.Column(
-        db.String(100),
+        db.Text,
         nullable=False,  # could add a default image URL
         default=DEFAULT_IMAGE_URL
     )
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+class Post(db.Model):
+    """Post. A user can have many posts."""
+
+    __tablename__ = "posts"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    title = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    content = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id')
+    )
+
+    user = db.relationship('User', backref='posts')

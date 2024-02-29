@@ -6,9 +6,22 @@
 
 {% block content %}
 <img src="{{user.img_url}}" alt="">
-<h1>{{user.first_name}} {{user.last_name}}</h1>
-<a class="btn btn-primary text-white" href="/users/{{user.id}}/edit">Edit</a>
-<form action="/users/{{user.id}}/delete" method="POST">
-  <input type="submit" value="Delete">
+<h1>{{user.get_full_name()}}</h1>
+<form>
+  <input type="submit" formaction="/users/{{user.id}}/edit" value="Edit" formmethod="GET">
+  <input type="submit" value="Delete" formaction="/users/{{user.id}}/delete" formmethod="POST">
+</form>
+
+<div>
+  <h2>Posts</h2>
+  <ul>
+    {{% for post in posts%}}
+    <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
+    {{% endfor %}}
+  </ul>
+</div>
+
+<form>
+  <input type="submit" value="Add Post" form="/users/{{user.id}}/posts/new" formmethod="GET">
 </form>
 {% endblock %}

@@ -8,15 +8,15 @@ Edit a user
 <form action="/users/{{user.id}}/edit" method="post">
   <div>
     <label for="first_name">First Name</label>
-    <input type="text" name="first_name">
+    <input type="text" name="first_name" value="{{ user.first_name }}">
   </div>
   <div>
     <label for="last_name">Last Name</label>
-    <input type="text" name="last_name">
+    <input type="text" name="last_name" value="{{ user.last_name }}">
   </div>
   <div>
     <label for="img_url">Image URL</label>
-    <input type="url" name="img_url">
+    <input type="url" name="img_url" value="{{ user.img_url }}">
   </div>
   <a class="btn btn-primary text-white" href="/users/{{user.id}}">Cancel</a>
   <input type="submit" value="Save">
