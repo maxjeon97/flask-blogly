@@ -5,7 +5,7 @@ import os
 from flask import Flask, request, redirect, render_template
 # from flask_debugtoolbar import DebugToolbarExtension
 
-from models import connect_db, User, db, Post, Tag, PostTag
+from models import connect_db, User, db, Post, Tag
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "oh-so-secret"
@@ -19,6 +19,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 connect_db(app)
 
+# TODO: can add flash messages and tests
 
 @app.get('/')
 def show_homepage():
@@ -88,7 +89,8 @@ def handle_delete_user(user_id):
     """Deletes user from db and redirects to users."""
     user = User.query.get_or_404(user_id)
 
-    for post in user.posts:
+    posts = Post.query.filter(Post.user_id == user_id).all()
+    for post in posts:
         db.session.delete(post)
 
     db.session.delete(user)
@@ -110,12 +112,11 @@ def handle_add_post(user_id):
     """Inserts new post into db and redirect to user detail page."""
     title = request.form['title']
     content = request.form['content']
-    tag_ids = request.form.getlist('tag')
+    tag_ids = [int(num) for num in request.form.getlist('tag')]
 
     post = Post(title=title, content=content, user_id=user_id)
 
-    for tag_id in tag_ids:
-        post.tags.append(Tag.query.get_or_404(tag_id))
+    post.tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
 
     db.session.add(post)
     db.session.commit()
@@ -143,17 +144,13 @@ def handle_edit_post(post_id):
     """Handles post edit form submission and updates database accordingly"""
     title = request.form['title']
     content = request.form['content']
-    tag_ids = request.form.getlist('tag')
+    tag_ids = [int(num) for num in request.form.getlist('tag')]
 
     post = Post.query.get_or_404(post_id)
     post.title = title
     post.content = content
 
-    for post_tag in post.post_tags:
-        db.session.delete(post_tag)
-
-    for tag_id in tag_ids:
-        post.tags.append(Tag.query.get_or_404(tag_id))
+    post.tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
 
     db.session.commit()
 
@@ -164,9 +161,6 @@ def handle_edit_post(post_id):
 def handle_delete_post(post_id):
     """Deletes a post"""
     post = Post.query.get_or_404(post_id)
-
-    for post_tag in post.post_tags:
-        db.session.delete(post_tag)
 
     db.session.delete(post)
     db.session.commit()
@@ -222,6 +216,7 @@ def handle_edit_tag(tag_id):
 def handle_delete_tag(tag_id):
     """Deletes a tag"""
     tag = Tag.query.get_or_404(tag_id)
+
     db.session.delete(tag)
     db.session.commit()
 

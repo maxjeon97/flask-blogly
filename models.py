@@ -81,9 +81,11 @@ class Post(db.Model):
         nullable=False
     )
 
-    post_tags = db.relationship('PostTag', backref='post')
+    def generate_readable_time(self):
+        return self.created_at.strftime("%a %b %-d  %Y, %-I:%M %p %Z")
 
     tags = db.relationship('Tag', secondary='post_tags', backref='posts')
+
 
 class Tag(db.Model):
     """A tag. A post can have many tags."""
@@ -101,6 +103,7 @@ class Tag(db.Model):
         nullable=False,
         unique=True
     )
+
 
 class PostTag(db.Model):
     """Through table for posts and tags."""
