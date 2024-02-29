@@ -8,10 +8,10 @@
 <img src="{{user.img_url}}" alt="">
 <h1>{{user.get_full_name()}}</h1>
 <form>
-  <input type="submit" formaction="/users/{{user.id}}/edit" value="Edit" formmethod="GET">
-  <input type="submit" value="Delete" formaction="/users/{{user.id}}/delete" formmethod="POST">
+  <input class="btn btn-primary" type="submit" formaction="/users/{{user.id}}/edit" formmethod="GET" value="Edit">
+  <input class="btn btn-danger" type="submit" formaction="/users/{{user.id}}/delete" formmethod="POST" value="Delete">
 </form>
-
+<br>
 <div>
   <h2>Posts</h2>
   <ul>
@@ -22,6 +22,6 @@
 </div>
 
 <form>
-  <input type="submit" value="Add Post" formaction="/users/{{user.id}}/posts/new" formmethod="GET">
+  <input class="btn btn-secondary" type="submit" value="Add Post" formaction="/users/{{user.id}}/posts/new" formmethod="GET">
 </form>
 {% endblock %}

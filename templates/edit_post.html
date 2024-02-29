@@ -15,8 +15,8 @@
     <label for="content">Content</label>
     <textarea class="form-control" rows="10" name="content">{{post.content}}</textarea>
   </div>
-  <input type="submit" value="Cancel" formaction="/posts/{{post.id}}" formmethod="GET">
-  <input type="submit" value="Edit" formaction="/posts/{{post.id}}/edit" formmethod="POST">
+  <input class="btn btn-warning" type="submit" value="Cancel" formaction="/posts/{{post.id}}" formmethod="GET">
+  <input class="btn btn-success" type="submit" value="Save" formaction="/posts/{{post.id}}/edit" formmethod="POST">
 </form>
 
 {% endblock %}

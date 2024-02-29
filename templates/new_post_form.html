@@ -14,7 +14,7 @@ Add Post for {{user.get_full_name()}}
     <label for="content">Content</label>
     <textarea class="form-control" rows="10" name="content"></textarea>
   </div>
-  <input type="submit" value="Cancel" formaction='/users/{{user.id}}' formmethod="GET">
-  <input type="submit" value="Add" formaction="" formmethod="POST">
+  <input class="btn btn-warning" type="submit" value="Cancel" formaction='/users/{{user.id}}' formmethod="GET">
+  <input class="btn btn-success" type="submit" value="Add" formaction="" formmethod="POST">
 </form>
 {% endblock %}

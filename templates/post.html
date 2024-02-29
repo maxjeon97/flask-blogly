@@ -11,8 +11,8 @@
 <i>By {{ post.user.get_full_name() }}</i>
 <br>
 <form>
-  <input type="submit" value="Cancel" formaction='/users/{{post.user_id}}' formmethod="GET">
-  <input type="submit" value="Edit" formaction="/posts/{{post.id}}/edit" formmethod="GET">
-  <input type="submit" value="Delete" formaction="/posts/{{post.id}}/delete" formmethod="POST">
+  <input class="btn btn-warning" type="submit" value="Cancel" formaction='/users/{{post.user_id}}' formmethod="GET">
+  <input class="btn btn-primary" type="submit" value="Edit" formaction="/posts/{{post.id}}/edit" formmethod="GET">
+  <input class="btn btn-danger" type="submit" value="Delete" formaction="/posts/{{post.id}}/delete" formmethod="POST">
 </form>
 {% endblock %}
