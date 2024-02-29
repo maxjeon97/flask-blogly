@@ -41,8 +41,8 @@ class User(db.Model):
         nullable=False,  # could add a default image URL
         default=DEFAULT_IMAGE_URL
     )
-    # TODO: ask about this too
-    posts = db.relationship('Post', cascade="all, delete-orphan")
+
+    posts = db.relationship('Post', backref='user')
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
@@ -81,4 +81,40 @@ class Post(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User')
+    post_tags = db.relationship('PostTag', backref='post')
+
+    tags = db.relationship('Tag', secondary='post_tags', backref='posts')
+
+class Tag(db.Model):
+    """A tag. A post can have many tags."""
+
+    __tablename__ = "tags"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    name = db.Column(
+        db.String(30),
+        nullable=False,
+        unique=True
+    )
+
+class PostTag(db.Model):
+    """Through table for posts and tags."""
+
+    __tablename__ = "post_tags"
+
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey('posts.id'),
+        primary_key=True
+    )
+
+    tag_id = db.Column(
+        db.Integer,
+        db.ForeignKey('tags.id'),
+        primary_key=True
+    )

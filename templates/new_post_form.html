@@ -14,6 +14,14 @@ Add Post for {{user.get_full_name()}}
     <label for="content">Content</label>
     <textarea class="form-control" rows="10" name="content"></textarea>
   </div>
+  <div class="form-check">
+    {% for tag in tags %}
+    <input class="form-check-input" name="tag" type="checkbox" value="{{tag.id}}">
+    <label class="form-check-label" for="tag">
+      {{tag.name}}
+    </label>
+    {% endfor %}
+  </div>
   <input class="btn btn-warning" type="submit" value="Cancel" formaction='/users/{{user.id}}' formmethod="GET">
   <input class="btn btn-success" type="submit" value="Add" formaction="" formmethod="POST">
 </form>
