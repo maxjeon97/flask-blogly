@@ -6,18 +6,20 @@
 
 {% block content %}
 
-{{ post.content }}
+<p class="fs-4">{{ post.content }}</p>
 <br>
 <i>By {{ post.user.get_full_name() }}</i>
 <br>
-<h4 class="d-inline-block"><b>Tags:</b></h4>
-{% for tag in post.tags %}
-<h5 class="d-inline-block">
-  <a class="btn btn-primary" href="tags/{{tag.id}}">
-    <i>{{tag.name}}</i>
-  </a>
-</h5>
-{% endfor %}
+<div class="mt-2 mb-2">
+  <h5 class="d-inline-block"><b>Tags:</b></h5>
+  {% for tag in post.tags %}
+  <h6 class="d-inline-block">
+    <a class="btn btn-primary tags" href="/tags/{{tag.id}}">
+     <i>{{tag.name}}</i>
+    </a>
+  </h6>
+  {% endfor %}
+</div>
 <form>
   <input class="btn btn-warning" type="submit" value="Cancel" formaction='/users/{{post.user_id}}' formmethod="GET">
   <input class="btn btn-primary" type="submit" value="Edit" formaction="/posts/{{post.id}}/edit" formmethod="GET">

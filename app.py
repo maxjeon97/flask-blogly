@@ -134,7 +134,8 @@ def show_post_detail(post_id):
 def show_post_edit_form(post_id):
     """Shows form to edit a post"""
     post = Post.query.get_or_404(post_id)
-    return render_template('edit_post.html', post=post)
+    tags = Tag.query.all()
+    return render_template('edit_post.html', post=post, tags=tags)
 
 
 @app.post('/posts/<int:post_id>/edit')
@@ -142,10 +143,18 @@ def handle_edit_post(post_id):
     """Handles post edit form submission and updates database accordingly"""
     title = request.form['title']
     content = request.form['content']
+    tag_ids = request.form.getlist('tag')
 
     post = Post.query.get_or_404(post_id)
     post.title = title
     post.content = content
+
+    for post_tag in post.post_tags:
+        db.session.delete(post_tag)
+
+    for tag_id in tag_ids:
+        post.tags.append(Tag.query.get(tag_id))
+
     db.session.commit()
 
     return redirect(f'/posts/{post_id}')
@@ -155,6 +164,10 @@ def handle_edit_post(post_id):
 def handle_delete_post(post_id):
     """Deletes a post"""
     post = Post.query.get_or_404(post_id)
+
+    for post_tag in post.post_tags:
+        db.session.delete(post_tag)
+
     db.session.delete(post)
     db.session.commit()
 
@@ -172,12 +185,12 @@ def show_tag_detail(tag_id):
     tag = Tag.query.get(tag_id)
     return render_template('tag.html', tag=tag)
 
-@app.get('tags/new')
+@app.get('/tags/new')
 def show_new_tag_form():
     """Displays new tag form."""
     return render_template('new_tag_form.html')
 
-@app.post('tags/new')
+@app.post('/tags/new')
 def handle_add_tag():
     """Adds new tag to database."""
     name = request.form['name']
@@ -191,16 +204,16 @@ def handle_add_tag():
 @app.get('/tags/<int:tag_id>/edit')
 def show_edit_tag_form(tag_id):
     """Shows form to edit a tag"""
-    tag = Post.query.get_or_404(tag_id)
+    tag = Tag.query.get_or_404(tag_id)
     return render_template('edit_tag_form.html', tag=tag)
 
 @app.post('/tags/<int:tag_id>/edit')
 def handle_edit_tag(tag_id):
     """Handles tag edit form submission and updates database accordingly"""
-    name = request.form['name']
+    name = request.form['tag_name']
 
-    post = Post.query.get_or_404(tag_id)
-    post.name = name
+    tag = Tag.query.get_or_404(tag_id)
+    tag.name = name
     db.session.commit()
 
     return redirect('/tags')
