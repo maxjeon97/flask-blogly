@@ -138,8 +138,8 @@ class UserViewTestCase(TestCase):
 
             html = resp.get_data(as_text=True)
             self.assertIn("Edit Post", html)
-            self.assertIn('<input type="submit" value="Cancel"', html)
-            self.assertIn('<input type="submit" value="Edit"', html)
+            self.assertIn('<input class="btn btn-warning"', html)
+            self.assertIn('<input class="btn btn-success"', html)
 
     def test_delete_post_redirect_followed(self):
         """Tests that post got deleted on rendered template"""

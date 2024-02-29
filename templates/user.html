@@ -21,7 +21,6 @@
   </ul>
 </div>
 
-<form>
-  <input class="btn btn-secondary" type="submit" value="Add Post" formaction="/users/{{user.id}}/posts/new" formmethod="GET">
-</form>
+<a class="btn btn-secondary" href="/users/{{user.id}}/posts/new">Add Post</a>
+
 {% endblock %}

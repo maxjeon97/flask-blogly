@@ -41,7 +41,7 @@ class User(db.Model):
         nullable=False,  # could add a default image URL
         default=DEFAULT_IMAGE_URL
     )
-
+    # TODO: ask about this too
     posts = db.relationship('Post', cascade="all, delete-orphan")
 
     def get_full_name(self):
@@ -77,7 +77,8 @@ class Post(db.Model):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('users.id')
+        db.ForeignKey('users.id'),
+        nullable=False
     )
 
     user = db.relationship('User')

@@ -87,6 +87,7 @@ def handle_edit_form(user_id):
 def delete_user(user_id):
     """Deletes user from db and redirects to users."""
     user = User.query.get_or_404(user_id)
+    # TODO: loop over posts and delete one by one
     db.session.delete(user)
     db.session.commit()
 
@@ -102,7 +103,7 @@ def show_new_post_form(user_id):
 
 @app.post('/users/<int:user_id>/posts/new')
 def add_new_post(user_id):
-    """Insert new post into db and redirect to user detail page."""
+    """Inserts new post into db and redirect to user detail page."""
     title = request.form['title']
     content = request.form['content']
 
@@ -115,18 +116,21 @@ def add_new_post(user_id):
 
 @app.get('/posts/<int:post_id>')
 def display_post(post_id):
+    """Displays post detail"""
     post = Post.query.get_or_404(post_id)
     return render_template('post.html', post=post)
 
 
 @app.get('/posts/<int:post_id>/edit')
 def show_post_edit_form(post_id):
+    """Shows form to edit a post"""
     post = Post.query.get_or_404(post_id)
     return render_template('edit_post.html', post=post)
 
 
 @app.post('/posts/<int:post_id>/edit')
 def handle_post_edit(post_id):
+    """Handles post edit form submission and updates database accordingly"""
     title = request.form['title']
     content = request.form['content']
 
@@ -140,6 +144,7 @@ def handle_post_edit(post_id):
 
 @app.post('/posts/<int:post_id>/delete')
 def delete_post(post_id):
+    """Deletes a post"""
     post = Post.query.get_or_404(post_id)
     db.session.delete(post)
     db.session.commit()
