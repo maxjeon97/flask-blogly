@@ -115,7 +115,7 @@ def handle_add_post(user_id):
     post = Post(title=title, content=content, user_id=user_id)
 
     for tag_id in tag_ids:
-        post.tags.append(Tag.query.get(tag_id))
+        post.tags.append(Tag.query.get_or_404(tag_id))
 
     db.session.add(post)
     db.session.commit()
@@ -153,7 +153,7 @@ def handle_edit_post(post_id):
         db.session.delete(post_tag)
 
     for tag_id in tag_ids:
-        post.tags.append(Tag.query.get(tag_id))
+        post.tags.append(Tag.query.get_or_404(tag_id))
 
     db.session.commit()
 
@@ -182,7 +182,7 @@ def show_tag_list():
 @app.get('/tags/<int:tag_id>')
 def show_tag_detail(tag_id):
     """Displays detail of tag."""
-    tag = Tag.query.get(tag_id)
+    tag = Tag.query.get_or_404(tag_id)
     return render_template('tag.html', tag=tag)
 
 @app.get('/tags/new')
