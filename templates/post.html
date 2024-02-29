@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ post.title }}
+{% endblock %}
+
+{% block content %}
+
+{{ post.content }}
+<br>
+<i>By {{ post.user.get_full_name() }}</i>
+<br>
+<form>
+  <input type="submit" value="Cancel" formaction='/users/{{post.user_id}}' formmethod="GET">
+  <input type="submit" value="Edit" formaction="/posts/{{post.id}}/edit" formmethod="GET">
+  <input type="submit" value="Delete" formaction="/posts/{{post.id}}/delete" formmethod="POST">
+</form>
+{% endblock %}

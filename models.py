@@ -42,8 +42,11 @@ class User(db.Model):
         default=DEFAULT_IMAGE_URL
     )
 
+    posts = db.relationship('Post', backref='user')
+
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
+
 
 class Post(db.Model):
     """Post. A user can have many posts."""
@@ -76,5 +79,3 @@ class Post(db.Model):
         db.Integer,
         db.ForeignKey('users.id')
     )
-
-    user = db.relationship('User', backref='posts')

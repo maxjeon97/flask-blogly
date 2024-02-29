@@ -1,4 +1,4 @@
-from models import DEFAULT_IMAGE_URL, User
+from models import DEFAULT_IMAGE_URL, User, Post
 from app import app, db
 from unittest import TestCase
 import os
@@ -31,6 +31,9 @@ class UserViewTestCase(TestCase):
         # As you add more models later in the exercise, you'll want to delete
         # all of their records before each test just as we're doing with the
         # User model below.
+
+        Post.query.delete()
+
         User.query.delete()
 
         test_user = User(
@@ -47,6 +50,17 @@ class UserViewTestCase(TestCase):
         # rely on this user in our tests without needing to know the numeric
         # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
+
+        test_post = Post(
+            title="Test Title",
+            content="Test Content",
+            user_id=self.user_id
+        )
+
+        db.session.add(test_post)
+        db.session.commit()
+
+        self.post_id = test_post.id
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -81,6 +95,7 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+            self.assertIn(f"{DEFAULT_IMAGE_URL}", html)
 
     def test_delete_user_redirect(self):
         """Tests redirect."""
@@ -100,3 +115,40 @@ class UserViewTestCase(TestCase):
             self.assertNotIn("test1_first", html)
             self.assertNotIn("test1_last", html)
             self.assertIn("Add user", html)
+
+# Below this line are our posts tests
+
+    def test_display_post(self):
+        """Tests display of post given post_id"""
+        with app.test_client() as client:
+            resp = client.get(f'/posts/{self.post_id}')
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("Test Title", html)
+            self.assertIn("Test Content", html)
+            self.assertIn("test1_first", html)
+            self.assertIn("test1_last", html)
+
+    def test_show_edit_post_form(self):
+        """Tests whether edit post form shows"""
+        with app.test_client() as client:
+            resp = client.get(f'/posts/{self.post_id}/edit')
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("Edit Post", html)
+            self.assertIn('<input type="submit" value="Cancel"', html)
+            self.assertIn('<input type="submit" value="Edit"', html)
+
+    def test_delete_post_redirect_followed(self):
+        """Tests that post got deleted on rendered template"""
+        with app.test_client() as client:
+            resp = client.post(
+                f'/posts/{self.post_id}/delete', follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertNotIn("Test Title", html)
+            self.assertIn("test1_first", html)
+            self.assertIn("test1_last", html)
