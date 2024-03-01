@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 # from flask_debugtoolbar import DebugToolbarExtension
 
 from models import connect_db, User, db, Post, Tag
@@ -18,8 +18,6 @@ app.config['SQLALCHEMY_ECHO'] = True
 # debug = DebugToolbarExtension(app)
 
 connect_db(app)
-
-# TODO: can add flash messages and tests
 
 @app.get('/')
 def show_homepage():
@@ -51,6 +49,8 @@ def handle_add_user():
     db.session.add(user)
     db.session.commit()
 
+    flash('User added!')
+
     return redirect('/users')
 
 
@@ -81,6 +81,8 @@ def handle_edit_form(user_id):
     user.img_url = img_url
     db.session.commit()
 
+    flash('User updated!')
+
     return redirect('/users')
 
 
@@ -95,6 +97,8 @@ def handle_delete_user(user_id):
 
     db.session.delete(user)
     db.session.commit()
+
+    flash('User deleted!')
 
     return redirect('/users')
 
@@ -120,6 +124,8 @@ def handle_add_post(user_id):
 
     db.session.add(post)
     db.session.commit()
+
+    flash('Post added!')
 
     return redirect(f'/users/{user_id}')
 
@@ -154,6 +160,8 @@ def handle_edit_post(post_id):
 
     db.session.commit()
 
+    flash('Post updated!')
+
     return redirect(f'/posts/{post_id}')
 
 
@@ -164,6 +172,8 @@ def handle_delete_post(post_id):
 
     db.session.delete(post)
     db.session.commit()
+
+    flash('Post deleted!')
 
     return redirect(f'/users/{post.user_id}')
 
@@ -193,6 +203,8 @@ def handle_add_tag():
     db.session.add(tag)
     db.session.commit()
 
+    flash('Tag added!')
+
     return redirect('/tags')
 
 @app.get('/tags/<int:tag_id>/edit')
@@ -210,6 +222,8 @@ def handle_edit_tag(tag_id):
     tag.name = name
     db.session.commit()
 
+    flash('Tag updated!')
+
     return redirect('/tags')
 
 @app.post('/tags/<int:tag_id>/delete')
@@ -219,5 +233,7 @@ def handle_delete_tag(tag_id):
 
     db.session.delete(tag)
     db.session.commit()
+
+    flash('Tag deleted!')
 
     return redirect('/tags')

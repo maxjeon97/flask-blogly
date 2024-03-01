@@ -1,4 +1,4 @@
-from models import DEFAULT_IMAGE_URL, User, Post
+from models import DEFAULT_IMAGE_URL, User, Post, Tag
 from app import app, db
 from unittest import TestCase
 import os
@@ -19,7 +19,7 @@ app.config['TESTING'] = True
 db.drop_all()
 db.create_all()
 
-
+# TODO: separate test cases for postview and tagview
 class UserViewTestCase(TestCase):
     """Test views for users."""
 
@@ -31,6 +31,8 @@ class UserViewTestCase(TestCase):
         # As you add more models later in the exercise, you'll want to delete
         # all of their records before each test just as we're doing with the
         # User model below.
+
+        Tag.query.delete()
 
         Post.query.delete()
 
@@ -61,6 +63,14 @@ class UserViewTestCase(TestCase):
         db.session.commit()
 
         self.post_id = test_post.id
+
+        test_tag = Tag(name='test_tag')
+
+        db.session.add(test_tag)
+        db.session.commit()
+
+        self.tag_id = test_tag.id
+
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -152,3 +162,39 @@ class UserViewTestCase(TestCase):
             self.assertNotIn("Test Title", html)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+
+# Below this line are our tags tests
+
+    def test_display_tags(self):
+        """Tests that tags list shows."""
+        with app.test_client() as client:
+            resp = client.get('/tags')
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("test_tag", html)
+            self.assertIn("Add Tag", html)
+
+    def test_display_tag_form(self):
+        """Tests that tag form displays."""
+        with app.test_client() as client:
+            resp = client.get('/tags/new')
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("Create a tag", html)
+
+    def test_edit_tag_redirect_followed(self):
+        """Tests that tag properly edited."""
+        with app.test_client() as client:
+            resp = client.post(f'/tags/{self.tag_id}/edit',
+                               follow_redirects=True,
+                               data={'tag_name': 'edited_test_tag'}
+                               )
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("Tags", html)
+            self.assertIn("edited_test_tag", html)
+
+
