@@ -19,7 +19,9 @@ app.config['TESTING'] = True
 db.drop_all()
 db.create_all()
 
-# TODO: separate test cases for postview and tagview
+# COULD SEPARATE TO TagViewTestCase and PostViewTestCase
+
+
 class UserViewTestCase(TestCase):
     """Test views for users."""
 
@@ -38,6 +40,7 @@ class UserViewTestCase(TestCase):
 
         User.query.delete()
 
+        # Test user
         test_user = User(
             first_name="test1_first",
             last_name="test1_last",
@@ -47,12 +50,9 @@ class UserViewTestCase(TestCase):
         db.session.add(test_user)
         db.session.commit()
 
-        # We can hold onto our test_user's id by attaching it to self (which is
-        # accessible throughout this test class). This way, we'll be able to
-        # rely on this user in our tests without needing to know the numeric
-        # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
 
+        # Test post
         test_post = Post(
             title="Test Title",
             content="Test Content",
@@ -64,13 +64,13 @@ class UserViewTestCase(TestCase):
 
         self.post_id = test_post.id
 
+        # Test tag
         test_tag = Tag(name='test_tag')
 
         db.session.add(test_tag)
         db.session.commit()
 
         self.tag_id = test_tag.id
-
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -163,7 +163,7 @@ class UserViewTestCase(TestCase):
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
 
-# Below this line are our tags tests
+# Below this line are our tag tests
 
     def test_display_tags(self):
         """Tests that tags list shows."""
@@ -196,5 +196,3 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("Tags", html)
             self.assertIn("edited_test_tag", html)
-
-
